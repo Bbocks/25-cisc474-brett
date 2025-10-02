@@ -20,8 +20,10 @@ export default function Header() {
    return( 
         <div className="relative w-full" >
             <Navbar05 
+                logoHref="/"
                 onNavItemClick={(href) => router.push(href)}
                 navigationLinks={[
+                    { href: '/', label: 'Directory Page (TMP)' },
                     { href: '/dashboard', label: 'Dashboard' },
                     { href: '/courses', label: 'Courses' },
                     { href: '/calendar', label: 'Calendar' },

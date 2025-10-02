@@ -9,6 +9,12 @@ import { apiFetch } from "../lib/api";
 import type { CalendarFeature } from "./calendar";
 
 type Course = { id: string; code: string; title: string };
+type Assignment = {
+  id: string;
+  courseId: string;
+  title: string;
+  dueAt?: string | null;
+};
 
 function CalendarPageInner() {
     const [courses, setCourses] = useState<Course[] | null>(null);
@@ -21,16 +27,38 @@ function CalendarPageInner() {
         let cancelled = false;
         (async () => {
             try {
-                const data = await apiFetch<Course[]>('/courses');
+                const coursesRes = await apiFetch<Course[]>('/courses');
                 if (cancelled) return;
-                setCourses(data);
-                const visibility = data.reduce<Record<string, boolean>>((acc, c) => {
+                setCourses(coursesRes);
+                const visibility = coursesRes.reduce<Record<string, boolean>>((acc, c) => {
                     acc[c.id] = true;
                     return acc;
                 }, {});
                 setVisibleClasses(visibility);
-                // TODO: When assignments have dates, fetch and map accordingly
-                setFeatures([]);
+                // Fetch assignments and map to calendar features
+                const assignmentsRes = await apiFetch<Assignment[]>('/assignments');
+                if (cancelled) return;
+                // Build course color map (default to blue)
+                const defaultColor = "#3B82F6";
+                const courseIdToColor = new Map<string, string>();
+                for (const c of coursesRes) courseIdToColor.set(c.id, defaultColor);
+
+                const mapped: CalendarFeature[] = (assignmentsRes || [])
+                  .filter(a => !!a.dueAt)
+                  .map(a => {
+                    const due = new Date(a.dueAt as string);
+                    const color = courseIdToColor.get(a.courseId) || defaultColor;
+                    return {
+                      id: a.id,
+                      name: a.title,
+                      startAt: due,
+                      endAt: due,
+                      status: { id: "due", name: "Due", color },
+                      classId: a.courseId,
+                      classColor: color,
+                    } as CalendarFeature;
+                  });
+                setFeatures(mapped);
             } catch (e: any) {
                 if (!cancelled) setError(e?.message || 'Failed to load');
             } finally {
