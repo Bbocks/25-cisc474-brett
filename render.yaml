@@ -16,6 +16,8 @@ services:
         value: 10000
       - key: HOST
         value: 0.0.0.0
+      - key: WEB_ORIGIN
+        sync: false
       - key: DATABASE_URL
         sync: false  # set in Dashboard or via render CLI
       - key: DIRECT_URL

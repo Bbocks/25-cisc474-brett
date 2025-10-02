@@ -1,3 +1,6 @@
+## CORS / Environment
+
+See consolidated docs in `apps/docs/ENVIRONMENT.md` for configuring `WEB_ORIGIN` and the web app.
 # With-NestJs | API
 
 ## Getting Started
