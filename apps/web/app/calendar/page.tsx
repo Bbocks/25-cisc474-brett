@@ -74,12 +74,12 @@ function CalendarPageInner() {
                                 <CardTitle>Class Visibility</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
-                                {(courses || []).map((c) => (
-                                    <div key={cls.id} className="flex items-center space-x-2">
-                                        <Checkbox id={c.id} checked={!!visibleClasses[c.id]} onCheckedChange={() => handleClassToggle(c.id)} />
-                                        <label htmlFor={c.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center space-x-2 cursor-pointer">
+                                {(courses || []).map((course) => (
+                                    <div key={course.id} className="flex items-center space-x-2">
+                                        <Checkbox id={course.id} checked={!!visibleClasses[course.id]} onCheckedChange={() => handleClassToggle(course.id)} />
+                                        <label htmlFor={course.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center space-x-2 cursor-pointer">
                                             <div className="w-3 h-3 rounded-full bg-blue-500" />
-                                            <span>{c.code} - {c.title}</span>
+                                            <span>{course.code} - {course.title}</span>
                                         </label>
                                     </div>
                                 ))}
