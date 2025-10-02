@@ -172,6 +172,7 @@ function CoursesList() {
                 </p>
               </div>
             )}
+          </div>
         </div>
       </div>
     </div>
