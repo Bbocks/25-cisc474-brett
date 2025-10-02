@@ -7,6 +7,7 @@ async function bootstrap() {
     origin: process.env.CORS_ORIGIN?.split(',') ?? true,
     credentials: true,
   });
+
   const port = process.env.PORT || 3000;
   const host = process.env.HOST || undefined;
   await app.listen(port, host);

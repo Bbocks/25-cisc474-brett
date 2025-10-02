@@ -1,4 +1,4 @@
-'use client';
+'use client'
 
 import { useEffect, useState, Suspense } from "react";
 import Header from "@/_components/header";
@@ -182,9 +182,12 @@ function CoursesList() {
             )}
           </div>
         </div>
+        <Suspense fallback={<div className="text-sm text-gray-500">Loading courses...</div>}>
+          <CoursesList />
+        </Suspense>
       </div>
     </div>
-  );
+  )
 }
 
 export default function CoursesPage() {
