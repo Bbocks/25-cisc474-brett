@@ -11,10 +11,15 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   const url = `${base}${path.startsWith('/') ? '' : '/'}${path}`;
   const res = await fetch(url, {
     ...init,
-    headers: {
-      'Content-Type': 'application/json',
-      ...(init?.headers || {}),
-    },
+    method: init?.method ?? 'GET',
+    // Avoid setting JSON Content-Type on GET to keep it a simple request (no preflight)
+    headers:
+      (init?.method && init.method !== 'GET') || init?.body
+        ? {
+            'Content-Type': 'application/json',
+            ...(init?.headers || {}),
+          }
+        : init?.headers,
     cache: 'no-store',
   });
   if (!res.ok) {
