@@ -1,13 +1,13 @@
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Header from "@/_components/header";
 import { Card, CardContent } from "@/_components/ui/card";
 import { Badge } from "@/_components/ui/badge";
 import { Button } from "@/_components/ui/button";
 import { Input } from "@/_components/ui/input";
 import { Calendar } from "@/_components/ui/calendar";
-import { 
+import {
   BookOpen, 
   Calendar as CalendarIcon, 
   Users, 
@@ -15,110 +15,16 @@ import {
   Search,
   ChevronRight
 } from "lucide-react";
+import { apiFetch } from "../lib/api";
 
-// Mock course data - in a real app this would come from your database
-const mockCourses = [
-  {
-    id: '1',
-    code: 'CISC 474',
-    name: 'Web Development',
-    instructor: 'Dr. Sarah Johnson',
-    description: 'Learn modern web development technologies including React, Node.js, and databases.',
-    semester: 'Fall 2024',
-    credits: 3,
-    progress: 75,
-    grade: 'A-',
-    color: '#3B82F6',
-    assignments: 12,
-    completed: 9,
-    nextDue: '2024-12-15',
-    resources: [
-      { type: 'video', name: 'React Fundamentals', count: 8 },
-      { type: 'document', name: 'Course Notes', count: 15 },
-      { type: 'assignment', name: 'Labs', count: 6 }
-    ]
-  },
-  {
-    id: '2',
-    code: 'CISC 320',
-    name: 'Algorithms',
-    instructor: 'Prof. Michael Chen',
-    description: 'Study of fundamental algorithms and data structures for efficient problem solving.',
-    semester: 'Fall 2024',
-    credits: 3,
-    progress: 60,
-    grade: 'B+',
-    color: '#10B981',
-    assignments: 10,
-    completed: 6,
-    nextDue: '2024-12-18',
-    resources: [
-      { type: 'video', name: 'Algorithm Lectures', count: 12 },
-      { type: 'document', name: 'Textbook Chapters', count: 8 },
-      { type: 'assignment', name: 'Problem Sets', count: 8 }
-    ]
-  },
-  {
-    id: '3',
-    code: 'MATH 242',
-    name: 'Calculus II',
-    instructor: 'Dr. Emily Rodriguez',
-    description: 'Integration techniques, sequences, series, and applications of calculus.',
-    semester: 'Fall 2024',
-    credits: 4,
-    progress: 85,
-    grade: 'A',
-    color: '#F59E0B',
-    assignments: 15,
-    completed: 13,
-    nextDue: '2024-12-20',
-    resources: [
-      { type: 'video', name: 'Lecture Videos', count: 20 },
-      { type: 'document', name: 'Practice Problems', count: 25 },
-      { type: 'assignment', name: 'Homework', count: 12 }
-    ]
-  },
-  {
-    id: '4',
-    code: 'ENGL 110',
-    name: 'Academic Writing',
-    instructor: 'Prof. David Thompson',
-    description: 'Development of critical thinking and writing skills for academic contexts.',
-    semester: 'Fall 2024',
-    credits: 3,
-    progress: 90,
-    grade: 'A-',
-    color: '#EF4444',
-    assignments: 8,
-    completed: 7,
-    nextDue: '2024-12-22',
-    resources: [
-      { type: 'document', name: 'Writing Guides', count: 10 },
-      { type: 'assignment', name: 'Essays', count: 5 },
-      { type: 'video', name: 'Writing Workshops', count: 4 }
-    ]
-  },
-  {
-    id: '5',
-    code: 'PHYS 207',
-    name: 'Physics I',
-    instructor: 'Dr. Lisa Wang',
-    description: 'Mechanics, waves, and thermodynamics with laboratory component.',
-    semester: 'Fall 2024',
-    credits: 4,
-    progress: 45,
-    grade: 'B',
-    color: '#8B5CF6',
-    assignments: 14,
-    completed: 6,
-    nextDue: '2024-12-16',
-    resources: [
-      { type: 'video', name: 'Physics Lectures', count: 16 },
-      { type: 'document', name: 'Lab Manuals', count: 8 },
-      { type: 'assignment', name: 'Lab Reports', count: 10 }
-    ]
-  }
-];
+type Course = {
+  id: string;
+  code: string;
+  title: string;
+  description?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+};
 
 
 const getGradeColor = (grade: string) => {
@@ -128,19 +34,42 @@ const getGradeColor = (grade: string) => {
   return 'bg-gray-100 text-gray-800';
 };
 
-export default function CoursesPage() {
+function CoursesList() {
+  const [courses, setCourses] = useState<Course[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSemester, setFilterSemester] = useState('all');
 
-  const filteredCourses = mockCourses.filter(course => {
-    const matchesSearch = course.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         course.instructor.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSemester = filterSemester === 'all' || course.semester === filterSemester;
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await apiFetch<Course[]>('/courses');
+        if (!cancelled) setCourses(data);
+      } catch (e: any) {
+        if (!cancelled) setError(e?.message || 'Failed to load courses');
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (error) {
+    return <div className="text-red-600">{error}</div>;
+  }
+  if (!courses) {
+    return <div className="text-gray-500">Loading courses…</div>;
+  }
+
+  const filteredCourses = courses.filter(course => {
+    const matchesSearch = (course.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.code.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSemester = filterSemester === 'all'; // no semester field in schema
     return matchesSearch && matchesSemester;
   });
 
-  const semesters = ['all', ...Array.from(new Set(mockCourses.map(c => c.semester)))];
+  const semesters = ['all'];
 
   return (
     <div>
@@ -185,21 +114,18 @@ export default function CoursesPage() {
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4 flex-1">
                         {/* Course Color Indicator */}
-                        <div 
-                          className="w-4 h-4 rounded-full flex-shrink-0"
-                          style={{ backgroundColor: course.color }}
-                        />
+                        <div className="w-4 h-4 rounded-full flex-shrink-0 bg-blue-500" />
                         
                         {/* Course Info */}
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-3 mb-2">
                             <h3 className="text-xl font-semibold">{course.code}</h3>
-                            <Badge className={getGradeColor(course.grade)}>
-                              {course.grade}
+                            <Badge className={getGradeColor('A-')}>
+                              A-
                             </Badge>
                           </div>
-                          <h4 className="text-lg font-medium text-gray-900 mb-1">{course.name}</h4>
-                          <p className="text-sm text-gray-600 mb-2">{course.instructor}</p>
+                          <h4 className="text-lg font-medium text-gray-900 mb-1">{course.title}</h4>
+                          <p className="text-sm text-gray-600 mb-2">Instructor TBD</p>
                           <p className="text-sm text-gray-700 line-clamp-1">{course.description}</p>
                         </div>
 
@@ -207,15 +133,15 @@ export default function CoursesPage() {
                         <div className="flex items-center gap-6 text-sm text-gray-600">
                           <div className="flex items-center gap-2">
                             <CalendarIcon className="h-4 w-4" />
-                            <span>{course.semester}</span>
+                            <span>Semester TBD</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Users className="h-4 w-4" />
-                            <span>{course.credits} credits</span>
+                            <span>3 credits</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4" />
-                            <span>{course.completed}/{course.assignments} assignments</span>
+                            <span>--/-- assignments</span>
                           </div>
                         </div>
 
@@ -223,15 +149,12 @@ export default function CoursesPage() {
                         <div className="w-32">
                           <div className="flex justify-between text-sm mb-1">
                             <span>Progress</span>
-                            <span>{course.progress}%</span>
+                            <span>--%</span>
                           </div>
                           <div className="w-full bg-gray-200 rounded-full h-2">
                             <div 
                               className="h-2 rounded-full transition-all duration-300"
-                              style={{ 
-                                width: `${course.progress}%`,
-                                backgroundColor: course.color 
-                              }}
+                              style={{ width: `0%`, backgroundColor: '#3B82F6' }}
                             />
                           </div>
                         </div>
@@ -261,5 +184,13 @@ export default function CoursesPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CoursesPage() {
+  return (
+    <Suspense fallback={<div className="p-6">Loading…</div>}>
+      <CoursesList />
+    </Suspense>
   );
 }
