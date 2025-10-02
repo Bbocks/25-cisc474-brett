@@ -13,9 +13,10 @@ import { Input } from "@/_components/ui/input";
 import { Label } from "@/_components/ui/label";
 import { SetStateAction, useState } from "react";
 import Image from "next/image";
-import { Loader2, X } from "lucide-react";
+import { Loader2, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignUp() {
 	const [firstName, setFirstName] = useState("");
@@ -41,141 +42,151 @@ export default function SignUp() {
 	};
 
 	return (
-		<Card className="max-w-md justify-center mx-auto mt-20">
-			<CardHeader>
-				<CardTitle className="text-lg md:text-xl">Sign Up</CardTitle>
-				<CardDescription className="text-xs md:text-sm">
-					Enter your information to create an account
-				</CardDescription>
-			</CardHeader>
-			<CardContent>
-				<div className="grid gap-4">
-					<div className="grid grid-cols-2 gap-4">
-						<div className="grid gap-2">
-							<Label htmlFor="first-name">First name</Label>
-							<Input
-								id="first-name"
-								placeholder="Max"
-								required
-								onChange={(e: { target: { value: SetStateAction<string>; }; }) => {
-									setFirstName(e.target.value);
-								}}
-								value={firstName}
-							/>
-						</div>
-						<div className="grid gap-2">
-							<Label htmlFor="last-name">Last name</Label>
-							<Input
-								id="last-name"
-								placeholder="Robinson"
-								required
-								onChange={(e: { target: { value: SetStateAction<string>; }; }) => {
-									setLastName(e.target.value);
-								}}
-								value={lastName}
-							/>
-						</div>
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="email">Email</Label>
-						<Input
-							id="email"
-							type="email"
-							placeholder="m@example.com"
-							required
-							onChange={(e: { target: { value: SetStateAction<string>; }; }) => {
-								setEmail(e.target.value);
-							}}
-							value={email}
-						/>
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="password">Password</Label>
-						<Input
-							id="password"
-							type="password"
-							value={password}
-							onChange={(e: { target: { value: SetStateAction<string>; }; }) => setPassword(e.target.value)}
-							autoComplete="new-password"
-							placeholder="Password"
-						/>
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="password">Confirm Password</Label>
-						<Input
-							id="password_confirmation"
-							type="password"
-							value={passwordConfirmation}
-							onChange={(e: { target: { value: SetStateAction<string>; }; }) => setPasswordConfirmation(e.target.value)}
-							autoComplete="new-password"
-							placeholder="Confirm Password"
-						/>
-					</div>
-					<div className="grid gap-2">
-						<Label htmlFor="image">Profile Image (optional)</Label>
-						<div className="flex items-end gap-4">
-							{imagePreview && (
-								<div className="relative w-16 h-16 rounded-sm overflow-hidden">
-									<Image
-										src={imagePreview}
-										alt="Profile preview"
-										layout="fill"
-										objectFit="cover"
-									/>
-								</div>
-							)}
-							<div className="flex items-center gap-2 w-full">
+		<div className="max-w-md mx-auto mt-20">
+			<div className="mb-4 px-1">
+				<Link href="/">
+					<Button variant="outline" className="flex items-center gap-2">
+						<ArrowLeft className="h-4 w-4" />
+						Back
+					</Button>
+				</Link>
+			</div>
+			<Card className="justify-center">
+				<CardHeader>
+					<CardTitle className="text-lg md:text-xl">Sign Up</CardTitle>
+					<CardDescription className="text-xs md:text-sm">
+						Enter your information to create an account
+					</CardDescription>
+				</CardHeader>
+				<CardContent>
+					<div className="grid gap-4">
+						<div className="grid grid-cols-2 gap-4">
+							<div className="grid gap-2">
+								<Label htmlFor="first-name">First name</Label>
 								<Input
-									id="image"
-									type="file"
-									accept="image/*"
-									onChange={handleImageChange}
-									className="w-full"
+									id="first-name"
+									placeholder="Max"
+									required
+									onChange={(e: { target: { value: SetStateAction<string>; }; }) => {
+										setFirstName(e.target.value);
+									}}
+									value={firstName}
 								/>
-								{imagePreview && (
-									<X
-										className="cursor-pointer"
-										onClick={() => {
-											setImage(null);
-											setImagePreview(null);
-										}}
-									/>
-								)}
+							</div>
+							<div className="grid gap-2">
+								<Label htmlFor="last-name">Last name</Label>
+								<Input
+									id="last-name"
+									placeholder="Robinson"
+									required
+									onChange={(e: { target: { value: SetStateAction<string>; }; }) => {
+										setLastName(e.target.value);
+									}}
+									value={lastName}
+								/>
 							</div>
 						</div>
+						<div className="grid gap-2">
+							<Label htmlFor="email">Email</Label>
+							<Input
+								id="email"
+								type="email"
+								placeholder="m@example.com"
+								required
+								onChange={(e: { target: { value: SetStateAction<string>; }; }) => {
+									setEmail(e.target.value);
+								}}
+								value={email}
+							/>
+						</div>
+						<div className="grid gap-2">
+							<Label htmlFor="password">Password</Label>
+							<Input
+								id="password"
+								type="password"
+								value={password}
+								onChange={(e: { target: { value: SetStateAction<string>; }; }) => setPassword(e.target.value)}
+								autoComplete="new-password"
+								placeholder="Password"
+							/>
+						</div>
+						<div className="grid gap-2">
+							<Label htmlFor="password">Confirm Password</Label>
+							<Input
+								id="password_confirmation"
+								type="password"
+								value={passwordConfirmation}
+								onChange={(e: { target: { value: SetStateAction<string>; }; }) => setPasswordConfirmation(e.target.value)}
+								autoComplete="new-password"
+								placeholder="Confirm Password"
+							/>
+						</div>
+						<div className="grid gap-2">
+							<Label htmlFor="image">Profile Image (optional)</Label>
+							<div className="flex items-end gap-4">
+								{imagePreview && (
+									<div className="relative w-16 h-16 rounded-sm overflow-hidden">
+										<Image
+											src={imagePreview}
+											alt="Profile preview"
+											layout="fill"
+											objectFit="cover"
+										/>
+									</div>
+								)}
+								<div className="flex items-center gap-2 w-full">
+									<Input
+										id="image"
+										type="file"
+										accept="image/*"
+										onChange={handleImageChange}
+										className="w-full"
+									/>
+									{imagePreview && (
+										<X
+											className="cursor-pointer"
+											onClick={() => {
+												setImage(null);
+												setImagePreview(null);
+											}}
+										/>
+									)}
+								</div>
+							</div>
+						</div>
+						<Button
+							type="submit"
+							className="w-full"
+							disabled={loading}
+							onClick={async () => {
+								console.log("Please Implement Signup");
+								// await signUp.email({
+								// 	email,
+								// 	password,
+								// 	name: `${firstName} ${lastName}`,
+								// 	image: image ? await convertImageToBase64(image) : "",
+								// 	callbackURL: "/dashboard",
+								// });
+								console.log("signup");
+							}}
+						>
+							{loading ? (
+								<Loader2 size={16} className="animate-spin" />
+							) : (
+								"Create an account"
+							)}
+						</Button>
 					</div>
-					<Button
-						type="submit"
-						className="w-full"
-						disabled={loading}
-						onClick={async () => {
-							console.log("Please Implement Signup");
-							// await signUp.email({
-							// 	email,
-							// 	password,
-							// 	name: `${firstName} ${lastName}`,
-							// 	image: image ? await convertImageToBase64(image) : "",
-							// 	callbackURL: "/dashboard",
-							// });
-							console.log("signup");
-						}}
-					>
-						{loading ? (
-							<Loader2 size={16} className="animate-spin" />
-						) : (
-							"Create an account"
-						)}
-					</Button>
-				</div>
-			</CardContent>
-			<CardFooter>
-				<div className="flex justify-center w-full border-t py-4">
-					<p className="text-center text-xs text-neutral-500">
-						Secured by <span className="text-orange-400">better-auth.</span>
-					</p>
-				</div>
-			</CardFooter>
-		</Card>
+				</CardContent>
+				<CardFooter>
+					<div className="flex justify-center w-full border-t py-4">
+						<p className="text-center text-xs text-neutral-500">
+							Secured by <span className="text-orange-400">better-auth.</span>
+						</p>
+					</div>
+				</CardFooter>
+			</Card>
+		</div>
 	);
 }
 
