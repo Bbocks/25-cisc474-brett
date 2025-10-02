@@ -101,10 +101,40 @@ function DashboardInner() {
     return [...assignmentsWithDates].sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
   }, [assignmentsWithDates]);
 
-  const assignmentDates = assignmentsWithDates.map(a => a.dueDate);
-  const modifiers = { hasAssignment: assignmentDates };
+  // Group dates by urgency for calendar dot styling
+  const { overdueDates, todayDates, soonDates, laterDates } = useMemo(() => {
+    const uniqueDates = new Map<string, Date>();
+    for (const a of assignmentsWithDates) {
+      const d = new Date(a.dueDate.getFullYear(), a.dueDate.getMonth(), a.dueDate.getDate());
+      uniqueDates.set(d.toDateString(), d);
+    }
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const oneDayMs = 1000 * 60 * 60 * 24;
+
+    const overdue: Date[] = [];
+    const todayArr: Date[] = [];
+    const soon: Date[] = [];
+    const later: Date[] = [];
+
+    for (const d of uniqueDates.values()) {
+      const diffDays = Math.floor((d.getTime() - today.getTime()) / oneDayMs);
+      if (diffDays < 0) overdue.push(d);
+      else if (diffDays === 0) todayArr.push(d);
+      else if (diffDays <= 3) soon.push(d);
+      else later.push(d);
+    }
+
+    return { overdueDates: overdue, todayDates: todayArr, soonDates: soon, laterDates: later };
+  }, [assignmentsWithDates]);
+
+  const modifiers = { overdue: overdueDates, today: todayDates, soon: soonDates, later: laterDates };
   const modifiersClassNames = {
-    hasAssignment: 'relative after:content-[""] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-2 after:h-2 after:rounded-full after:bg-blue-500'
+    overdue: "relative after:content-[''] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:rounded-full after:bg-red-500",
+    today: "relative after:content-[''] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:rounded-full after:bg-amber-500",
+    soon: "relative after:content-[''] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:rounded-full after:bg-yellow-500",
+    later: "relative after:content-[''] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:rounded-full after:bg-blue-500",
   };
 
   const selectedDateAssignments = useMemo(() => {
