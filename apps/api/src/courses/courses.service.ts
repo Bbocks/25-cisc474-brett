@@ -1,12 +1,18 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class CoursesService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findAll() {
-    return this.prisma.course.findMany();
+  async findAll() {
+    try {
+      return await this.prisma.course.findMany();
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error('Failed to fetch courses via Prisma. Likely a missing table or migration on the deployed DB.', error);
+      throw new ServiceUnavailableException('Courses are temporarily unavailable');
+    }
   }
 
   findOne(id: string) {
