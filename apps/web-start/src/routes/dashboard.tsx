@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState, Suspense } from "react";
-import Header from "../_components/header";
-import { Calendar } from "../_components/ui/calendar";
-import { Card, CardContent, CardHeader, CardTitle } from "../_components/ui/card";
-import { Badge } from "../_components/ui/badge";
-import { Button } from "../_components/ui/button";
+import Header from "@/_components/header";
+import { Calendar } from "@/_components/ui/calendar";
+import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card";
+import { Badge } from "@/_components/ui/badge";
+import { Button } from "@/_components/ui/button";
 import { 
   BookOpen, 
   Calendar as CalendarIcon, 
@@ -15,7 +15,7 @@ import {
   CheckCircle,
   Circle
 } from "lucide-react";
-import { apiFetch } from "../lib/api";
+import { apiFetch } from "@/lib/api";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute('/dashboard')({
