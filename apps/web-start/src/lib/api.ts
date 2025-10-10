@@ -1,5 +1,5 @@
 export function getApiBaseUrl(): string {
-  const envUrl = process.env.NEXT_PUBLIC_API_URL;
+  const envUrl = import.meta.env.VITE_BACKEND_URL;
   if (envUrl && envUrl.length > 0) return envUrl.replace(/\/$/, '');
   // Fallbacks: Next.js dev server often proxies or runs alongside API
   // Default to localhost:3000 if not provided
