@@ -6,7 +6,12 @@ import { Checkbox } from "@/_components/ui/checkbox";
 import { SetStateAction, useState } from "react";
 import { Loader2, Key, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Sign } from "crypto";
+
+export const Route = createFileRoute('/login')({
+  component: SignIn,
+})
 
 export default function SignIn() {
   const [email, setEmail] = useState("");
@@ -51,7 +56,7 @@ export default function SignIn() {
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
                   <Link
-                      to="#"
+                      to="/"
                       className="ml-auto inline-block text-sm underline"
                     >
                       Forgot your password?
@@ -178,10 +183,9 @@ export default function SignIn() {
               <p className="text-center text-xs text-neutral-500">
                built with{" "}
                 <Link
-                  to="https://better-auth.com"
+                  href="https://better-auth.com"
                   className="underline"
-                  target="_blank"
-                >
+                  target="_blank" to={"/login"}                >
                   <span className="dark:text-white/70 cursor-pointer">
 									better-auth.
 								</span>

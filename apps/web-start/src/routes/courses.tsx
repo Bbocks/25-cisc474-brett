@@ -1,11 +1,17 @@
-import { useEffect, useState, Suspense, SetStateAction } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { createFileRoute } from "@tanstack/react-router";
+import { BookOpen, Calendar as CalendarIcon, ChevronRight, Clock, Search, Users } from "lucide-react";
+import { apiFetch } from "@/lib/api";
+import type { SetStateAction } from "react";
 import Header from "@/_components/header";
 import { Card, CardContent } from "@/_components/ui/card";
 import { Badge } from "@/_components/ui/badge";
 import { Button } from "@/_components/ui/button";
 import { Input } from "@/_components/ui/input";
-import { BookOpen, Calendar as CalendarIcon, Users, Clock, Search, ChevronRight } from "lucide-react";
-import { apiFetch } from "../lib/api";
+
+export const Route = createFileRoute('/courses')({
+  component: CoursesPage,
+})
 
 type Course = {
   id: string;

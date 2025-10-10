@@ -6,15 +6,18 @@ import {
 	CardFooter,
 	CardHeader,
 	CardTitle,
-} from "@/_components/ui/card";
+} from "../_components/ui/card";
 import { Input } from "@/_components/ui/input";
 import { Label } from "@/_components/ui/label";
 import { SetStateAction, useState } from "react";
-import Image from "next/image";
 import { Loader2, X, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useRouter } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+
+export const Route = createFileRoute('/signup')({
+  component: SignUp,
+})
 
 export default function SignUp() {
 	const [firstName, setFirstName] = useState("");
@@ -42,7 +45,7 @@ export default function SignUp() {
 	return (
 		<div className="max-w-md mx-auto mt-20">
 			<div className="mb-4 px-1">
-				<Link href="/">
+				<Link to="/">
 					<Button variant="outline" className="flex items-center gap-2">
 						<ArrowLeft className="h-4 w-4" />
 						Back
@@ -124,11 +127,10 @@ export default function SignUp() {
 							<div className="flex items-end gap-4">
 								{imagePreview && (
 									<div className="relative w-16 h-16 rounded-sm overflow-hidden">
-										<Image
+										<img
 											src={imagePreview}
 											alt="Profile preview"
-											layout="fill"
-											objectFit="cover"
+											style={{ width: '100%', height: '100%', objectFit: 'cover' }}
 										/>
 									</div>
 								)}

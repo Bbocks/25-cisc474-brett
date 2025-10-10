@@ -1,10 +1,15 @@
 import { useEffect, useState, Suspense } from "react";
-import Header from "@/_components/header";
-import Calendar from "./calendar";
-import { Checkbox } from "@/_components/ui/checkbox";
-import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card";
+import Header from "../_components/header";
+import Calendar from "./calendar_helper";
+import { Checkbox } from "../_components/ui/checkbox";
+import { Card, CardContent, CardHeader, CardTitle } from "../_components/ui/card";
 import { apiFetch } from "../lib/api";
 import type { CalendarFeature } from "./calendar_helper";
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute('/calendar')({
+    component: CalendarPage,
+  })
 
 type Course = { id: string; code: string; title: string };
 type Assignment = {

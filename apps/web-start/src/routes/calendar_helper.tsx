@@ -23,11 +23,11 @@ export type CalendarFeature = {
 interface CalendarProps {
   visibleClasses: Record<string, boolean>;
   classes: Array<{ id: string; name: string; color: string; visible: boolean }>;
-  features: CalendarFeature[];
+  features: Array<CalendarFeature>;
 }
 
 const Calendar = ({ visibleClasses, features }: CalendarProps) => {
-  const filteredFeatures: CalendarFeature[] = features.filter(feature => visibleClasses[feature.classId]);
+  const filteredFeatures: Array<CalendarFeature> = features.filter(feature => visibleClasses[feature.classId]);
   const years = filteredFeatures.length > 0 ? filteredFeatures.reduce<{ min: number; max: number }>((acc, f) => ({
     min: Math.min(acc.min, f.startAt.getFullYear()),
     max: Math.max(acc.max, f.endAt.getFullYear()),
@@ -44,7 +44,7 @@ const Calendar = ({ visibleClasses, features }: CalendarProps) => {
       </CalendarDate>
       <CalendarHeader />
       <CalendarBody features={filteredFeatures}>
-        {({ feature }: { feature: CalendarFeature }) => <CalendarItem feature={feature} key={feature.id} />}
+        {({ feature }) => <CalendarItem feature={feature} key={feature.id} />}
       </CalendarBody>
     </CalendarProvider>
   );

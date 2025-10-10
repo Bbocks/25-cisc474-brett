@@ -13,7 +13,11 @@ import {
   Target,
   BarChart3
 } from "lucide-react";
-import Link from "next/link";
+import { createFileRoute, Link } from "@tanstack/react-router";
+
+export const Route = createFileRoute('/grades')({
+  component: GradesPage,
+})
 
 // Mock grades data - in a real app this would come from your database
 const mockGrades = [
@@ -176,7 +180,7 @@ export default function GradesPage() {
       <div className="mx-auto px-4 py-8 max-w-screen-2xl">
         {/* Back Button */}
         <div className="mb-6">
-          <Link href="/courses">
+          <Link to="/courses">
             <Button variant="outline" className="flex items-center gap-2">
               <ArrowLeft className="h-4 w-4" />
               Back to Courses

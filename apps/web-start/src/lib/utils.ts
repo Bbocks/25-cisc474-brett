@@ -5,11 +5,11 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+export const apiUrl = import.meta.env.VITE_BACKEND_URL;
 
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   if (!apiUrl) {
-    throw new Error('NEXT_PUBLIC_API_URL is not defined');
+    throw new Error('VITE_BACKEND_URL is not defined');
   }
   const res = await fetch(`${apiUrl}${path}`, {
     ...init,
