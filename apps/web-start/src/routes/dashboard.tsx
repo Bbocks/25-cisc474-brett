@@ -4,6 +4,7 @@ import { Calendar } from "@/_components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card";
 import { Badge } from "@/_components/ui/badge";
 import { Button } from "@/_components/ui/button";
+import { Spinner } from "@/_components/ui/spinner"
 import { 
   BookOpen, 
   Calendar as CalendarIcon, 
@@ -404,7 +405,7 @@ function DashboardInner() {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="p-6">Loading…</div>}>
+    <Suspense fallback={<div className="flex items-center gap-6"><Spinner className="size-24" /></div>}>
       <DashboardInner />
     </Suspense>
   );

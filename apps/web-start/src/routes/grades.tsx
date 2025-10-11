@@ -3,6 +3,7 @@ import Header from "@/_components/header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card";
 import { Badge } from "@/_components/ui/badge";
 import { Button } from "@/_components/ui/button";
+import { Spinner } from "@/_components/ui/spinner"
 import { 
   ArrowLeft,
   TrendingUp,

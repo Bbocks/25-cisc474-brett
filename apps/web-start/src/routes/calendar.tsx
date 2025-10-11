@@ -3,6 +3,7 @@ import Header from "@/_components/header";
 import Calendar from "@/_components/calendar-helper";
 import { Checkbox } from "@/_components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card";
+import { Spinner } from "@/_components/ui/spinner"
 import { apiFetch } from "@/lib/api";
 import type { CalendarFeature } from "@/_components/calendar-helper";
 import { createFileRoute } from "@tanstack/react-router";
@@ -125,7 +126,7 @@ function CalendarPageInner() {
 
 export default function CalendarPage() {
     return (
-        <Suspense fallback={<div className="p-6">Loading…</div>}>
+        <Suspense fallback={<div className="flex items-center gap-6"><Spinner className="size-24" /></div>}>
             <CalendarPageInner />
         </Suspense>
     );
