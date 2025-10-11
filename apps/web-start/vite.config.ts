@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
-import tailwindcss from '@tailwindcss/vite';
+// import tailwindcss from '@tailwindcss/vite';
 import { cloudflare } from '@cloudflare/vite-plugin';
 
 const config = defineConfig({
@@ -11,15 +11,14 @@ const config = defineConfig({
     viteTsConfigPaths({
       projects: ['./tsconfig.json'],
     }),
-    tailwindcss(),
+    // tailwindcss(),
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
     tanstackStart(),
     // this must go last to ensure that SSR functions are found
     viteReact(),
   ],
-  define: {
-    // Force lightningcss to use WebAssembly
-    'process.env.LIGHTNINGCSS_WASM': 'true',
+  css: {
+    postcss: './postcss.config.ts',
   },
 });
 
