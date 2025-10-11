@@ -17,6 +17,10 @@ const config = defineConfig({
     // this must go last to ensure that SSR functions are found
     viteReact(),
   ],
+  define: {
+    // Force lightningcss to use WebAssembly
+    'process.env.LIGHTNINGCSS_WASM': 'true',
+  },
 });
 
 export default config;
