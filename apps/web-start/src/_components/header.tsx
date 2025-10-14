@@ -2,8 +2,8 @@
 
 import { Navbar05 } from "./ui/shadcn-io/navbar-05";
 import { Navbar01 } from "./ui/shadcn-io/navbar-01";
-import { useRouter } from "next/navigation";
-import { PrismaClient } from "@prisma/client";
+import { useRouter } from "@tanstack/react-router";
+// import { PrismaClient } from "@prisma/client";
 
 export default function Header() {
     const router = useRouter();
@@ -21,7 +21,7 @@ export default function Header() {
         <div className="relative w-full" >
             <Navbar05 
                 logoHref="/"
-                onNavItemClick={(href) => router.push(href)}
+                onNavItemClick={(href) => router.navigate({ to: href })}
                 navigationLinks={[
                     { href: '/', label: 'Directory Page (TMP)' },
                     { href: '/dashboard', label: 'Dashboard' },
