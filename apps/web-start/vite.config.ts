@@ -4,6 +4,8 @@ import viteReact from '@vitejs/plugin-react';
 import viteTsConfigPaths from 'vite-tsconfig-paths';
 import tailwindcss from '@tailwindcss/vite';
 import { cloudflare } from '@cloudflare/vite-plugin';
+import { browserslistToTargets } from 'lightningcss';
+import browserslist from 'browserslist';
 
 const config = defineConfig({
   plugins: [
@@ -21,6 +23,15 @@ const config = defineConfig({
     // Force lightningcss to use WebAssembly
     'process.env.LIGHTNINGCSS_WASM': 'true',
   },
+  css: {
+    transformer: 'lightningcss',
+    lightningcss: {
+      targets: browserslistToTargets(browserslist('>= 0.25%'))
+    }
+  },
+  build: {
+    cssMinify: 'lightningcss'
+  }
 });
 
 export default config;
