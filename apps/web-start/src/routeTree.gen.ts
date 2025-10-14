@@ -48,9 +48,9 @@ const CoursesIndexRoute = CoursesIndexRouteImport.update({
   getParentRoute: () => rootRouteImport,
 } as any)
 const CoursesGradesRoute = CoursesGradesRouteImport.update({
-  id: '/grades',
-  path: '/grades',
-  getParentRoute: () => CoursesRoute,
+  id: '/courses/grades',
+  path: '/courses/grades',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
@@ -117,6 +117,7 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   LoginRoute: typeof LoginRoute
   SignupRoute: typeof SignupRoute
+  CoursesGradesRoute: typeof CoursesGradesRoute
   CoursesIndexRoute: typeof CoursesIndexRoute
 }
 
@@ -166,10 +167,10 @@ declare module '@tanstack/react-router' {
     }
     '/courses/grades': {
       id: '/courses/grades'
-      path: '/grades'
+      path: '/courses/grades'
       fullPath: '/courses/grades'
       preLoaderRoute: typeof CoursesGradesRouteImport
-      parentRoute: typeof CoursesRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
@@ -180,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   LoginRoute: LoginRoute,
   SignupRoute: SignupRoute,
+  CoursesGradesRoute: CoursesGradesRoute,
   CoursesIndexRoute: CoursesIndexRoute,
 }
 export const routeTree = rootRouteImport
