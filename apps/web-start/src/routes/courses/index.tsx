@@ -10,7 +10,7 @@ import { Button } from "@/_components/ui/button";
 import { Input } from "@/_components/ui/input";
 import { Spinner } from "@/_components/ui/spinner"
 
-export const Route = createFileRoute('/courses')({
+export const Route = createFileRoute('/courses/')({
   component: CoursesPage,
 })
 

@@ -301,7 +301,7 @@ function DashboardInner() {
                         <Button size="sm" className="flex-1">
                           View Course
                         </Button>
-                        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/grades' })}>
+                        <Button size="sm" variant="outline" onClick={() => navigate({ to: '/courses/grades' })}>
                           Grades
                         </Button>
                       </div>

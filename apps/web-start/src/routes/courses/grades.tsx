@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-export const Route = createFileRoute('/grades')({
+export const Route = createFileRoute('/courses/grades')({
   component: GradesPage,
 })
 
