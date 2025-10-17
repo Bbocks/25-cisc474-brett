@@ -17,27 +17,17 @@ import {
   Circle
 } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import type { CourseDto } from "@repo/api/courses/dto";
+import type { AssignmentDto } from "@repo/api/assignments/dto";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute('/dashboard')({
   component: DashboardPage,
 })
 
-type Course = {
-  id: string;
-  code: string;
-  title: string;
-  description?: string | null;
-};
+type Course = CourseDto;
 
-type Assignment = {
-  id: string;
-  courseId: string;
-  title: string;
-  description?: string | null;
-  dueAt?: string | null; // from prisma: Assignment has dueAt
-  totalPoints?: number | null; // from prisma: totalPoints
-};
+type Assignment = AssignmentDto;
 
 const getGradeColor = (grade: string) => {
   if (grade.startsWith('A')) return 'bg-green-100 text-green-800';

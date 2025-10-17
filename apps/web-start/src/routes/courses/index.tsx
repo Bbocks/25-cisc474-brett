@@ -1,7 +1,8 @@
-import { Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { BookOpen, Calendar as CalendarIcon, ChevronRight, Clock, Search, Users } from "lucide-react";
 import { apiFetch } from "@/lib/api";
+import type { CourseDto, CourseCreateDto, CourseUpdateDto } from "@repo/api/courses/dto";
 import type { SetStateAction } from "react";
 import Header from "@/_components/header";
 import { Card, CardContent } from "@/_components/ui/card";
@@ -14,14 +15,7 @@ export const Route = createFileRoute('/courses/')({
   component: CoursesPage,
 })
 
-type Course = {
-  id: string;
-  code: string;
-  title: string;
-  description?: string | null;
-  startDate?: string | null;
-  endDate?: string | null;
-};
+type Course = CourseDto;
 
 
 const getGradeColor = (grade: string) => {
@@ -36,6 +30,8 @@ function CoursesList() {
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSemester, setFilterSemester] = useState('all');
+  const [form, setForm] = useState<Partial<CourseCreateDto & { id?: string }>>({});
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -67,6 +63,56 @@ function CoursesList() {
   });
 
   const semesters = ['all'];
+
+  const isEditing = useMemo(() => !!editingId, [editingId]);
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    const payload: CourseCreateDto = {
+      code: form.code ?? '',
+      title: form.title ?? '',
+      description: form.description,
+      startDate: form.startDate,
+      endDate: form.endDate,
+    };
+    const created = await apiFetch<Course>('/courses', { method: 'POST', body: JSON.stringify(payload) });
+    setCourses((prev) => (prev ? [created, ...prev] : [created]));
+    setForm({});
+  }
+
+  async function handleStartEdit(course: Course) {
+    setEditingId(course.id);
+    setForm({
+      id: course.id,
+      code: course.code,
+      title: course.title,
+      description: course.description ?? undefined,
+      startDate: course.startDate ?? undefined,
+      endDate: course.endDate ?? undefined,
+    });
+  }
+
+  async function handleUpdate(e: React.FormEvent) {
+    e.preventDefault();
+    if (!editingId) return;
+    const payload: CourseUpdateDto = {
+      id: editingId,
+      code: form.code,
+      title: form.title,
+      description: form.description,
+      startDate: form.startDate,
+      endDate: form.endDate,
+    };
+    const updated = await apiFetch<Course>('/courses', { method: 'PATCH', body: JSON.stringify(payload) });
+    setCourses((prev) => prev?.map((c) => (c.id === updated.id ? updated : c)) ?? [updated]);
+    setForm({});
+    setEditingId(null);
+  }
+
+  async function handleDelete(id: string) {
+    await apiFetch(`/courses/${id}`, { method: 'DELETE' });
+    setCourses((prev) => prev?.filter((c) => c.id !== id) ?? null);
+  }
 
   return (
     <div>
@@ -101,6 +147,24 @@ function CoursesList() {
                   ))}
                 </select>
               </div>
+            </div>
+
+            {/* Create / Edit Form */}
+            <div className="mb-8 border rounded-md p-4">
+              <h2 className="text-xl font-semibold mb-4">{isEditing ? 'Edit Course' : 'Create Course'}</h2>
+              <form onSubmit={isEditing ? handleUpdate : handleCreate} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Input placeholder="Code" value={form.code ?? ''} onChange={(e) => setForm((f) => ({ ...f, code: e.target.value }))} />
+                <Input placeholder="Title" value={form.title ?? ''} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />
+                <Input placeholder="Description" value={form.description ?? ''} onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))} />
+                <Input placeholder="Start Date (ISO)" value={form.startDate ?? ''} onChange={(e) => setForm((f) => ({ ...f, startDate: e.target.value }))} />
+                <Input placeholder="End Date (ISO)" value={form.endDate ?? ''} onChange={(e) => setForm((f) => ({ ...f, endDate: e.target.value }))} />
+                <div className="col-span-1 md:col-span-2 flex gap-2">
+                  <Button type="submit">{isEditing ? 'Update' : 'Create'}</Button>
+                  {isEditing && (
+                    <Button type="button" variant="outline" onClick={() => { setEditingId(null); setForm({}); }}>Cancel</Button>
+                  )}
+                </div>
+              </form>
             </div>
 
             {/* Courses List */}
@@ -157,10 +221,13 @@ function CoursesList() {
                         </div>
 
                         {/* Action Button */}
-                        <Button variant="outline" size="sm" className="flex items-center gap-2">
+                        <div className="flex items-center gap-2">
+                        <Button variant="outline" size="sm" className="flex items-center gap-2" onClick={() => handleStartEdit(course)}>
                           View Course
                           <ChevronRight className="h-4 w-4" />
                         </Button>
+                        <Button variant="destructive" size="sm" onClick={() => handleDelete(course.id)}>Delete</Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
