@@ -6,6 +6,7 @@ export const assignmentDto = z.object({
 	title: z.string(),
 	description: z.string().optional(),
 	dueAt: z.string().nullable().optional(),
+	totalPoints: z.number().optional(),
 });
 
 export const assignmentCreateDto = z.object({
@@ -13,6 +14,7 @@ export const assignmentCreateDto = z.object({
 	title: z.string().min(1),
 	description: z.string().optional(),
 	dueAt: z.string().nullable().optional(),
+	totalPoints: z.number().optional(),
 });
 
 export const assignmentUpdateDto = z.object({
@@ -20,6 +22,7 @@ export const assignmentUpdateDto = z.object({
 	title: z.string().min(1).optional(),
 	description: z.string().optional(),
 	dueAt: z.string().nullable().optional(),
+	totalPoints: z.number().optional(),
 }).refine((d) => d.title !== undefined || d.description !== undefined || d.dueAt !== undefined, {
 	message: 'At least one field must be provided',
 });
