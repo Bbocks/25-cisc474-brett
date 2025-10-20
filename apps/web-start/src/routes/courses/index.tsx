@@ -33,6 +33,9 @@ function CoursesList() {
   const [form, setForm] = useState<Partial<CourseCreateDto & { id?: string }>>({});
   const [editingId, setEditingId] = useState<string | null>(null);
 
+  // Move all hooks to the top before any conditional returns
+  const isEditing = useMemo(() => !!editingId, [editingId]);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -48,23 +51,22 @@ function CoursesList() {
     };
   }, []);
 
+  // Calculate filtered courses and semesters after hooks
+  const filteredCourses = courses?.filter(course => {
+    const matchesSearch = (course.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      course.code.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSemester = filterSemester === 'all'; // no semester field in schema
+    return matchesSearch && matchesSemester;
+  }) || [];
+
+  const semesters = ['all'];
+
   if (error) {
     return <div className="text-red-600">{error}</div>;
   }
   if (!courses) {
     return <div className="text-gray-500">Loading courses…</div>;
   }
-
-  const filteredCourses = courses.filter(course => {
-    const matchesSearch = (course.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
-      course.code.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesSemester = filterSemester === 'all'; // no semester field in schema
-    return matchesSearch && matchesSemester;
-  });
-
-  const semesters = ['all'];
-
-  const isEditing = useMemo(() => !!editingId, [editingId]);
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
