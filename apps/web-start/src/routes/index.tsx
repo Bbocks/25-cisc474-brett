@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { Navbar01 } from '@/_components/ui/shadcn-io/navbar-01';
+import { Link } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
@@ -14,8 +15,8 @@ function RouteComponent() {
           <Navbar01 
               signInHref={signInHref}
               ctaHref={ctaHref}
-              onSignInClick={() => window.location.href = signInHref}   
-              onCtaClick={() => window.location.href = ctaHref}
+              onSignInClick={() => <Link to = {signInHref} />}   
+              onCtaClick={() => <Link to = {ctaHref} />}
               navigationLinks={[
                   { href: '#', label: 'Home', active: false },
                   { href: '#pages', label: 'Pages', active: false },
@@ -32,12 +33,12 @@ function RouteComponent() {
               <div id="features" className="container mx-auto px-4 py-8">
                   <h2 className="text-3xl font-semibold mb-4">Pages for Assignment: Learning NextJS</h2>
                   <ul className="list-disc list-inside space-y-2">
-                      <li>Page One: <a href="/dashboard" className="text-blue-500 hover:underline ml-4">Dashboard (Backend Data)</a></li>   
-                      <li>Page Two: <a href="/courses" className="text-blue-500 hover:underline ml-4">Courses (Backend Data)</a></li>
-                      <li>Page Three: <a href="/calendar" className="text-blue-500 hover:underline ml-4">Calendar (Backend Data)</a></li>
-                      <li>Page Four: <a href="/courses/grades" className="text-blue-500 hover:underline ml-4">Grades</a></li>
-                      <li>Page Five: <a href="/login" className="text-blue-500 hover:underline ml-4">Login</a></li>
-                      <li>Page Six: <a href="/signup" className="text-blue-500 hover:underline ml-4">Signup</a></li>
+                      <li>Page One: <Link to="/dashboard" className="text-blue-500 hover:underline ml-4">Dashboard (Backend Data)</Link></li>   
+                      <li>Page Two: <Link to="/courses" className="text-blue-500 hover:underline ml-4">Courses (Backend Data)</Link></li>
+                      <li>Page Three: <Link to="/calendar" className="text-blue-500 hover:underline ml-4">Calendar (Backend Data)</Link></li>
+                      <li>Page Four: <Link to="/courses/grades" className="text-blue-500 hover:underline ml-4">Grades</Link></li>
+                      <li>Page Five: <Link to="/login" className="text-blue-500 hover:underline ml-4">Login</Link></li>
+                      <li>Page Six: <Link to="/signup" className="text-blue-500 hover:underline ml-4">Signup</Link></li>
                   </ul>
               </div>
               <div id="about" className="container mx-auto px-4 py-8">

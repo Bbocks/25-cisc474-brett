@@ -5,6 +5,8 @@ import { Checkbox } from "@/_components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card";
 import { Spinner } from "@/_components/ui/spinner"
 import { apiFetch } from "@/lib/api";
+import type { CourseDto } from "@repo/api/courses/dto";
+import type { AssignmentDto } from "@repo/api/assignments/dto";
 import type { CalendarFeature } from "@/_components/calendar-helper";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -12,13 +14,8 @@ export const Route = createFileRoute('/calendar')({
     component: CalendarPage,
   })
 
-type Course = { id: string; code: string; title: string };
-type Assignment = {
-  id: string;
-  courseId: string;
-  title: string;
-  dueAt?: string | null;
-};
+type Course = CourseDto;
+type Assignment = AssignmentDto;
 
 function CalendarPageInner() {
     const [courses, setCourses] = useState<Course[] | null>(null);
