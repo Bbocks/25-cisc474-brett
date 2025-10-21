@@ -1,10 +1,10 @@
-import { useEffect, useState, Suspense } from "react";
+import { useMemo, useState, Suspense } from "react";
 import Header from "@/_components/header";
 import Calendar from "@/_components/calendar-helper";
 import { Checkbox } from "@/_components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card";
 import { Spinner } from "@/_components/ui/spinner"
-import { apiFetch } from "@/lib/api";
+import { useApiQuery } from "@/integrations/api";
 import type { CourseDto } from "@repo/api/courses/dto";
 import type { AssignmentDto } from "@repo/api/assignments/dto";
 import type { CalendarFeature } from "@/_components/calendar-helper";
@@ -18,56 +18,45 @@ type Course = CourseDto;
 type Assignment = AssignmentDto;
 
 function CalendarPageInner() {
-    const [courses, setCourses] = useState<Course[] | null>(null);
     const [visibleClasses, setVisibleClasses] = useState<Record<string, boolean>>({});
-    const [features, setFeatures] = useState<CalendarFeature[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
+    
+    const coursesQuery = useApiQuery<Course[]>(['courses'], '/courses');
+    const assignmentsQuery = useApiQuery<Assignment[]>(['assignments'], '/assignments');
 
-    useEffect(() => {
-        let cancelled = false;
-        (async () => {
-            try {
-                const coursesRes = await apiFetch<Course[]>('/courses');
-                if (cancelled) return;
-                setCourses(coursesRes);
-                const visibility = coursesRes.reduce<Record<string, boolean>>((acc, c) => {
-                    acc[c.id] = true;
-                    return acc;
-                }, {});
-                setVisibleClasses(visibility);
-                // Fetch assignments and map to calendar features
-                const assignmentsRes = await apiFetch<Assignment[]>('/assignments');
-                if (cancelled) return;
-                // Build course color map (default to blue)
-                const defaultColor = "#3B82F6";
-                const courseIdToColor = new Map<string, string>();
-                for (const c of coursesRes) courseIdToColor.set(c.id, defaultColor);
+    // Initialize visibility when courses load
+    const courses = coursesQuery.data || [];
+    if (courses.length > 0 && Object.keys(visibleClasses).length === 0) {
+        const visibility = courses.reduce<Record<string, boolean>>((acc, c) => {
+            acc[c.id] = true;
+            return acc;
+        }, {});
+        setVisibleClasses(visibility);
+    }
 
-                const mapped: CalendarFeature[] = (assignmentsRes || [])
-                  .filter(a => !!a.dueAt)
-                  .map(a => {
-                    const due = new Date(a.dueAt as string);
-                    const color = courseIdToColor.get(a.courseId) || defaultColor;
-                    return {
-                      id: a.id,
-                      name: a.title,
-                      startAt: due,
-                      endAt: due,
-                      status: { id: "due", name: "Due", color },
-                      classId: a.courseId,
-                      classColor: color,
-                    } as CalendarFeature;
-                  });
-                setFeatures(mapped);
-            } catch (e: any) {
-                if (!cancelled) setError(e?.message || 'Failed to load');
-            } finally {
-                if (!cancelled) setLoading(false);
-            }
-        })();
-        return () => { cancelled = true; };
-    }, []);
+    // Map assignments to calendar features
+    const features = useMemo(() => {
+        if (!assignmentsQuery.data) return [];
+        
+        const defaultColor = "#3B82F6";
+        const courseIdToColor = new Map<string, string>();
+        for (const c of courses) courseIdToColor.set(c.id, defaultColor);
+
+        return (assignmentsQuery.data || [])
+          .filter(a => !!a.dueAt)
+          .map(a => {
+            const due = new Date(a.dueAt as string);
+            const color = courseIdToColor.get(a.courseId) || defaultColor;
+            return {
+              id: a.id,
+              name: a.title,
+              startAt: due,
+              endAt: due,
+              status: { id: "due", name: "Due", color },
+              classId: a.courseId,
+              classColor: color,
+            } as CalendarFeature;
+          });
+    }, [assignmentsQuery.data, courses]);
 
     const handleClassToggle = (classId: string) => {
         setVisibleClasses(prev => ({
@@ -83,14 +72,14 @@ function CalendarPageInner() {
                 <div className="flex gap-6">
                     {/* Calendar - 75% width */}
                     <div className="flex-1" style={{ width: '75%' }}>
-                        {loading ? (
+                        {coursesQuery.showLoading || assignmentsQuery.showLoading ? (
                             <div className="p-6 text-gray-500">Loading calendar…</div>
-                        ) : error ? (
-                            <div className="p-6 text-red-600">{error}</div>
+                        ) : coursesQuery.error || assignmentsQuery.error ? (
+                            <div className="p-6 text-red-600">{coursesQuery.error?.message || assignmentsQuery.error?.message || 'Failed to load'}</div>
                         ) : (
                             <Calendar
                                 visibleClasses={visibleClasses}
-                                classes={(courses || []).map(c => ({ id: c.id, name: `${c.code} - ${c.title}`, color: '#3B82F6', visible: true }))}
+                                classes={courses.map(c => ({ id: c.id, name: `${c.code} - ${c.title}`, color: '#3B82F6', visible: true }))}
                                 features={features}
                             />
                         )}
@@ -103,7 +92,7 @@ function CalendarPageInner() {
                                 <CardTitle>Class Visibility</CardTitle>
                             </CardHeader>
                             <CardContent className="space-y-3">
-                                {(courses || []).map((course) => (
+                                {courses.map((course) => (
                                     <div key={course.id} className="flex items-center space-x-2">
                                         <Checkbox id={course.id} checked={!!visibleClasses[course.id]} onCheckedChange={() => handleClassToggle(course.id)} />
                                         <label htmlFor={course.id} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center space-x-2 cursor-pointer">

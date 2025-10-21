@@ -1,36 +1,26 @@
 'use client'
 
-import useSWR from 'swr'
-import { apiFetch } from '@/lib/utils'
+import { useApiQuery } from '@/integrations/api'
 import { Card, CardContent } from '@/_components/ui/card'
 import { Badge } from '@/_components/ui/badge'
+import type { AssignmentDto } from '@repo/api/assignments/dto'
 
-type Assignment = {
-  id: string
-  title: string
-  dueDate?: string
-  courseCode?: string
-  points?: number
-  status?: string
-}
+type Assignment = AssignmentDto
 
 export function AssignmentsList() {
-  const { data, error, isLoading } = useSWR<Assignment[]>(
-    '/assignments',
-    (path) => apiFetch<Assignment[]>(path),
-    { suspense: true, fallbackData: [] }
-  )
+  const assignmentsQuery = useApiQuery<Assignment[]>(['assignments'], '/assignments')
 
-  if (error) return <div className="text-red-600">Failed to load assignments</div>
-  if (!data || isLoading) return null
+  if (assignmentsQuery.error) return <div className="text-red-600">Failed to load assignments</div>
+  if (assignmentsQuery.showLoading) return <div className="text-gray-500">Loading assignments...</div>
+  if (!assignmentsQuery.data) return null
 
   return (
     <div className="space-y-3">
-      {data.map((assignment) => {
+      {assignmentsQuery.data.map((assignment) => {
         const title = assignment.title || '--'
-        const courseCode = assignment.courseCode || '--'
-        const pointsText = assignment.points != null ? `${assignment.points} pts` : '--'
-        const dateText = assignment.dueDate ? new Date(assignment.dueDate).toLocaleDateString() : '--'
+        const courseCode = 'TBD' // No courseCode field in AssignmentDto, would need to fetch course data
+        const pointsText = assignment.totalPoints != null ? `${assignment.totalPoints} pts` : '--'
+        const dateText = assignment.dueAt ? new Date(assignment.dueAt).toLocaleDateString() : '--'
         return (
           <Card key={assignment.id}>
             <CardContent className="p-4 flex items-center gap-3">

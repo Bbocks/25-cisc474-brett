@@ -1,26 +1,13 @@
 'use client'
 
-import useSWR from 'swr'
-import { apiFetch } from '@/lib/utils'
+import { useApiQuery } from '@/integrations/api'
 import { Card, CardContent } from '@/_components/ui/card'
 import { Badge } from '@/_components/ui/badge'
 import { Button } from '@/_components/ui/button'
 import { Calendar as CalendarIcon, Users, Clock, ChevronRight } from 'lucide-react'
+import type { CourseDto } from '@repo/api/courses/dto'
 
-type Course = {
-  id: string
-  code: string
-  name: string
-  instructor?: string
-  description?: string
-  semester?: string
-  credits?: number
-  progress?: number
-  grade?: string
-  color?: string
-  assignments?: number
-  completed?: number
-}
+type Course = CourseDto
 
 function getGradeColor(grade?: string) {
   if (!grade) return 'bg-gray-100 text-gray-800'
@@ -31,29 +18,26 @@ function getGradeColor(grade?: string) {
 }
 
 export function CoursesList() {
-  const { data, error, isLoading } = useSWR<Course[]>(
-    '/courses',
-    (path) => apiFetch<Course[]>(path),
-    { suspense: true, fallbackData: [] }
-  )
+  const coursesQuery = useApiQuery<Course[]>(['courses'], '/courses')
 
-  if (error) return <div className="text-red-600">Failed to load courses</div>
-  if (!data || isLoading) return null
+  if (coursesQuery.error) return <div className="text-red-600">Failed to load courses</div>
+  if (coursesQuery.showLoading) return <div className="text-gray-500">Loading courses...</div>
+  if (!coursesQuery.data) return null
 
   return (
     <div className="space-y-4">
-      {data.map((course) => {
-        const codeOrName = course.code || course.name || '--'
-        const name = course.name || '--'
-        const instructor = course.instructor || '--'
+      {coursesQuery.data.map((course) => {
+        const codeOrName = course.code || course.title || '--'
+        const name = course.title || '--'
+        const instructor = 'TBD' // No instructor field in CourseDto
         const description = course.description || '--'
-        const semester = course.semester || '--'
-        const creditsText = course.credits != null ? String(course.credits) : '--'
-        const gradeText = course.grade || '--'
-        const completedText = course.completed != null ? String(course.completed) : '--'
-        const assignmentsText = course.assignments != null ? String(course.assignments) : '--'
-        const progressValue = typeof course.progress === 'number' ? course.progress : 0
-        const progressText = typeof course.progress === 'number' ? `${course.progress}%` : '--'
+        const semester = 'TBD' // No semester field in CourseDto
+        const creditsText = '3' // Default credits
+        const gradeText = '--' // No grade field in CourseDto
+        const completedText = '--' // No completed field in CourseDto
+        const assignmentsText = '--' // No assignments field in CourseDto
+        const progressValue = 0 // No progress field in CourseDto
+        const progressText = '--'
 
         return (
         <Card key={course.id} className="hover:shadow-md transition-shadow">
@@ -97,7 +81,7 @@ export function CoursesList() {
                   <div className="w-full bg-gray-200 rounded-full h-2">
                     <div 
                       className="h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${progressValue}%`, backgroundColor: course.color || '#3B82F6' }}
+                      style={{ width: `${progressValue}%`, backgroundColor: '#3B82F6' }}
                     />
                   </div>
                 </div>
