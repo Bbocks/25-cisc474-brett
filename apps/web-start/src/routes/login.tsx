@@ -4,16 +4,15 @@ import { Input } from "@/_components/ui/input";
 import { Label } from "@/_components/ui/label";
 import { Checkbox } from "@/_components/ui/checkbox";
 import { SetStateAction, useState } from "react";
-import { Loader2, Key, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Sign } from "crypto";
 
 export const Route = createFileRoute('/login')({
   component: SignIn,
 })
 
-export default function SignIn() {
+function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);

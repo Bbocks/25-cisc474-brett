@@ -11,15 +11,13 @@ import { Input } from "@/_components/ui/input";
 import { Label } from "@/_components/ui/label";
 import { SetStateAction, useState } from "react";
 import { Loader2, X, ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
-import { useRouter } from "@tanstack/react-router";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute('/signup')({
   component: SignUp,
 })
 
-export default function SignUp() {
+function SignUp() {
 	const [firstName, setFirstName] = useState("");
 	const [lastName, setLastName] = useState("");
 	const [email, setEmail] = useState("");
@@ -27,7 +25,6 @@ export default function SignUp() {
 	const [passwordConfirmation, setPasswordConfirmation] = useState("");
 	const [image, setImage] = useState<File | null>(null);
 	const [imagePreview, setImagePreview] = useState<string | null>(null);
-	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 
 	const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -374,7 +374,7 @@ function DashboardInner() {
   );
 }
 
-export default function DashboardPage() {
+function DashboardPage() {
   return (
     <Suspense fallback={<div className="flex items-center gap-6"><Spinner className="size-24" /></div>}>
       <DashboardInner />

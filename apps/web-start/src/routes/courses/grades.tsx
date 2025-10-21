@@ -152,7 +152,7 @@ const getTypeIcon = (type: string) => {
   }
 };
 
-export default function GradesPage() {
+function GradesPage() {
   const [selectedCourse] = useState(mockGrades[0]!); // In a real app, this would be from URL params
   const [sortBy, setSortBy] = useState('dueDate');
 

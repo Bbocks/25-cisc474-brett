@@ -110,7 +110,7 @@ function CalendarPageInner() {
     );
 }
 
-export default function CalendarPage() {
+ function CalendarPage() {
     return (
         <Suspense fallback={<div className="flex items-center gap-6"><Spinner className="size-24" /></div>}>
             <CalendarPageInner />

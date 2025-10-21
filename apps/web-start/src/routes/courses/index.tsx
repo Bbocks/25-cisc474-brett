@@ -251,7 +251,7 @@ function CoursesList() {
   )
 }
 
-export default function CoursesPage() {
+function CoursesPage() {
   return (
     <Suspense fallback={<div className="flex items-center gap-6"><Spinner className="size-24" /></div>}>
       <CoursesList />
