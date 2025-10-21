@@ -4,6 +4,7 @@ import { ExtractJwt, Strategy } from 'passport-jwt';
 import { passportJwtSecret } from 'jwks-rsa';
 import * as dotenv from 'dotenv';
 import { PrismaService } from 'src/prisma.service';
+import crypto from 'crypto';
 
 dotenv.config();
 
@@ -26,6 +27,10 @@ function splitSub(sub: string) {
   // "provider|id" → { provider, providerId }
   const [provider, ...rest] = sub.split('|');
   return { provider, providerId: rest.join('|') };
+}
+
+function cuid(): any {
+  return crypto.randomUUID();
 }
 
 @Injectable()
@@ -63,6 +68,9 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     if (!auth) {
       const user = await this.prisma.user.create({
         data: {
+          id: cuid(),
+          name: '',
+          email: '',
           authentications: {
             create: {
               provider,
