@@ -1,7 +1,7 @@
-import { Suspense, useEffect, useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { BookOpen, Calendar as CalendarIcon, ChevronRight, Clock, Search, Users } from "lucide-react";
-import { apiFetch } from "@/lib/api";
+import { useApiQuery, useApiMutation } from "@/integrations/api";
 import type { CourseDto, CourseCreateDto, CourseUpdateDto } from "@repo/api/courses/dto";
 import type { SetStateAction } from "react";
 import Header from "@/_components/header";
@@ -26,8 +26,6 @@ const getGradeColor = (grade: string) => {
 };
 
 function CoursesList() {
-  const [courses, setCourses] = useState<Course[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterSemester, setFilterSemester] = useState('all');
   const [form, setForm] = useState<Partial<CourseCreateDto & { id?: string }>>({});
@@ -36,23 +34,26 @@ function CoursesList() {
   // Move all hooks to the top before any conditional returns
   const isEditing = useMemo(() => !!editingId, [editingId]);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const data = await apiFetch<Course[]>('/courses');
-        if (!cancelled) setCourses(data);
-      } catch (e: any) {
-        if (!cancelled) setError(e?.message || 'Failed to load courses');
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const coursesQuery = useApiQuery<Course[]>(['courses'], '/courses');
+  
+  const createCourseMutation = useApiMutation<CourseCreateDto, Course>({
+    path: '/courses',
+    method: 'POST',
+    invalidateKeys: [['courses']]
+  });
+
+  const updateCourseMutation = useApiMutation<CourseUpdateDto, Course>({
+    endpoint: () => ({ path: '/courses', method: 'PATCH' }),
+    invalidateKeys: [['courses']]
+  });
+
+  const deleteCourseMutation = useApiMutation<{ id: string }, void>({
+    endpoint: (variables) => ({ path: `/courses/${variables.id}`, method: 'DELETE' }),
+    invalidateKeys: [['courses']]
+  });
 
   // Calculate filtered courses and semesters after hooks
-  const filteredCourses = courses?.filter(course => {
+  const filteredCourses = coursesQuery.data?.filter(course => {
     const matchesSearch = (course.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
       course.code.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesSemester = filterSemester === 'all'; // no semester field in schema
@@ -61,10 +62,10 @@ function CoursesList() {
 
   const semesters = ['all'];
 
-  if (error) {
-    return <div className="text-red-600">{error}</div>;
+  if (coursesQuery.error) {
+    return <div className="text-red-600">{coursesQuery.error.message}</div>;
   }
-  if (!courses) {
+  if (coursesQuery.showLoading) {
     return <div className="text-gray-500">Loading courses…</div>;
   }
 
@@ -77,8 +78,7 @@ function CoursesList() {
       startDate: form.startDate,
       endDate: form.endDate,
     };
-    const created = await apiFetch<Course>('/courses', { method: 'POST', body: JSON.stringify(payload) });
-    setCourses((prev) => (prev ? [created, ...prev] : [created]));
+    await createCourseMutation.mutateAsync(payload);
     setForm({});
   }
 
@@ -105,15 +105,13 @@ function CoursesList() {
       startDate: form.startDate,
       endDate: form.endDate,
     };
-    const updated = await apiFetch<Course>('/courses', { method: 'PATCH', body: JSON.stringify(payload) });
-    setCourses((prev) => prev?.map((c) => (c.id === updated.id ? updated : c)) ?? [updated]);
+    await updateCourseMutation.mutateAsync(payload);
     setForm({});
     setEditingId(null);
   }
 
   async function handleDelete(id: string) {
-    await apiFetch(`/courses/${id}`, { method: 'DELETE' });
-    setCourses((prev) => prev?.filter((c) => c.id !== id) ?? null);
+    await deleteCourseMutation.mutateAsync({ id });
   }
 
   return (

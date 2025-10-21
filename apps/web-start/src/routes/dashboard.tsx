@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, Suspense } from "react";
+import { useMemo, Suspense, useState } from "react";
 import Header from "@/_components/header";
 import { Calendar } from "@/_components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/_components/ui/card";
@@ -16,7 +16,7 @@ import {
   CheckCircle,
   Circle
 } from "lucide-react";
-import { apiFetch } from "@/lib/api";
+import { useApiQuery } from "@/integrations/api";
 import type { CourseDto } from "@repo/api/courses/dto";
 import type { AssignmentDto } from "@repo/api/assignments/dto";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
@@ -62,33 +62,14 @@ function DashboardInner() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const navigate = useNavigate();
 
-  const [courses, setCourses] = useState<Course[] | null>(null);
-  const [assignments, setAssignments] = useState<Assignment[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      try {
-        const [coursesRes, assignmentsRes] = await Promise.all([
-          apiFetch<Course[]>('/courses'),
-          apiFetch<Assignment[]>('/assignments'),
-        ]);
-        if (cancelled) return;
-        setCourses(coursesRes);
-        setAssignments(assignmentsRes);
-      } catch (e: any) {
-        if (!cancelled) setError(e?.message || 'Failed to load dashboard');
-      }
-    })();
-    return () => { cancelled = true; };
-  }, []);
+  const coursesQuery = useApiQuery<Course[]>(['courses'], '/courses');
+  const assignmentsQuery = useApiQuery<Assignment[]>(['assignments'], '/assignments');
 
   const assignmentsWithDates = useMemo(() => {
-    return (assignments || [])
+    return (assignmentsQuery.data || [])
       .map(a => ({ ...a, dueDate: a.dueAt ? new Date(a.dueAt) : null }))
       .filter(a => a.dueDate !== null) as Array<Assignment & { dueDate: Date }>;
-  }, [assignments]);
+  }, [assignmentsQuery.data]);
 
   const sortedAssignments = useMemo(() => {
     return [...assignmentsWithDates].sort((a, b) => a.dueDate.getTime() - b.dueDate.getTime());
@@ -135,14 +116,14 @@ function DashboardInner() {
     return assignmentsWithDates.filter(a => a.dueDate.toDateString() === selectedDate.toDateString());
   }, [assignmentsWithDates, selectedDate]);
 
-  if (error) {
-    return <div className="p-6 text-red-600">{error}</div>;
+  if (coursesQuery.error || assignmentsQuery.error) {
+    return <div className="p-6 text-red-600">{coursesQuery.error?.message || assignmentsQuery.error?.message || 'Failed to load dashboard'}</div>;
   }
-  if (!courses || !assignments) {
+  if (coursesQuery.showLoading || assignmentsQuery.showLoading) {
     return <div className="p-6 text-gray-500">Loading…</div>;
   }
 
-  const totalCourses = courses.length;
+  const totalCourses = coursesQuery.data?.length || 0;
   const avgProgress = 0; // Placeholder: no progress field yet
 
   return (
@@ -219,7 +200,7 @@ function DashboardInner() {
             <div className="mb-8">
               <h2 className="text-2xl font-semibold mb-4">Your Courses</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {courses.map((course) => (
+                {(coursesQuery.data || []).map((course) => (
                   <Card key={course.id} className="hover:shadow-lg transition-shadow">
                     <CardHeader className="pb-3">
                       <div className="flex items-start justify-between">
@@ -335,7 +316,7 @@ function DashboardInner() {
                         />
                         <div className="flex-1">
                           <p className="font-medium text-sm">{assignment.title}</p>
-                          <p className="text-xs text-gray-600">{courses.find(c => c.id === assignment.courseId)?.code}</p>
+                          <p className="text-xs text-gray-600">{(coursesQuery.data || []).find(c => c.id === assignment.courseId)?.code}</p>
                         </div>
                         <Badge variant="outline" className="text-xs">
                           {(assignment.totalPoints ?? 0)} pts
@@ -356,7 +337,7 @@ function DashboardInner() {
                 <div className="space-y-3">
                   {sortedAssignments.slice(0, 5).map((assignment) => {
                     const daysUntil = getDaysUntilDue(assignment.dueDate);
-                    const course = courses.find(c => c.id === assignment.courseId);
+                    const course = (coursesQuery.data || []).find(c => c.id === assignment.courseId);
                     return (
                       <div key={assignment.id} className="flex items-center gap-3 p-3 border rounded-lg hover:bg-gray-50">
                         <div className="w-3 h-3 rounded-full bg-blue-500" />
