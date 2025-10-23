@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { Navbar01 } from '@/_components/ui/shadcn-io/navbar-01';
 import { Link } from '@tanstack/react-router';
 import Header from '@/_components/header';
 
@@ -8,20 +7,10 @@ export const Route = createFileRoute('/')({
 });
 
 function RouteComponent() {
-  const signInHref = "/login";
     
   return (
       <div>
         <Header />
-          {/* <Navbar01 
-              onSignInClick={() => <Link to = {signInHref} />}   
-              onCtaClick={() => <Link to = {signInHref} />}
-              navigationLinks={[
-                  { href: '#', label: 'Home', active: false },
-                  { href: '#pages', label: 'Pages', active: false },
-                  { href: '#about', label: 'About', active: false},
-              ]}
-          /> */}
           <div className="container mx-auto px-4 py-8">
               <div id="home" className="container mx-auto px-4 py-8">
                   <h1 className="text-4xl font-bold mb-4">Welcome to Our Web Application</h1>
