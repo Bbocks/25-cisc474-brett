@@ -18,7 +18,7 @@ export default function Header() {
                 logoHref="/"
                 onNavItemClick={(href) => router.navigate({ to: href })}
                 navigationLinks={[
-                    { href: '/', label: 'Directory Page (TMP)' },
+                    { href: '/', label: 'Directory Page (Grading)' },
                     { href: '/dashboard', label: 'Dashboard' },
                     { href: '/courses', label: 'Courses' },
                     { href: '/calendar', label: 'Calendar' },
@@ -26,6 +26,7 @@ export default function Header() {
                 userName={user?.name}
                 userEmail={user?.email}
                 userAvatar={user?.picture}
+                notificationCount={0}
             />
         </div>
     } else {
