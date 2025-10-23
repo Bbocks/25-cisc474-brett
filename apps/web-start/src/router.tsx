@@ -4,7 +4,6 @@ import * as TanstackQuery from './integrations/root-provider';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
-import { Auth0Provider } from '@auth0/auth0-react';
 
 // Create a new router instance
 export const getRouter = () => {
@@ -21,17 +20,9 @@ export const getRouter = () => {
     defaultPreload: 'intent',
     Wrap: (props: { children: React.ReactNode }) => {
       return (
-        <Auth0Provider
-          domain={import.meta.env.VITE_AUTH0_DOMAIN}
-          clientId={import.meta.env.VITE_AUTH0_CLIENT_ID}
-          authorizationParams={{
-            redirect_uri: redirect_uri,
-          }}
-        >
-          <TanstackQuery.Provider {...rqContext}>
-            {props.children}
-          </TanstackQuery.Provider>
-        </Auth0Provider>
+        <TanstackQuery.Provider {...rqContext}>
+          {props.children}
+        </TanstackQuery.Provider>
       );
     },
   });
