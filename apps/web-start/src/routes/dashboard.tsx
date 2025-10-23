@@ -119,10 +119,10 @@ function DashboardInner() {
   }, [assignmentsWithDates, selectedDate]);
 
   if (coursesQuery.error || assignmentsQuery.error) {
-    return <div className="p-6 text-red-600">{coursesQuery.error?.message || assignmentsQuery.error?.message || 'Failed to load dashboard'}</div>;
+    return <div className="flex flex-col items-center justify-center h-screen text-red-600">{coursesQuery.error?.message || assignmentsQuery.error?.message || 'Failed to load dashboard'}</div>;
   }
   if (coursesQuery.showLoading || assignmentsQuery.showLoading) {
-    return <div className="p-6 text-gray-500">Loading…</div>;
+    return <div className="flex flex-col items-center justify-center h-screen"><Spinner className="size-24" /></div>;
   }
 
   const totalCourses = coursesQuery.data?.length || 0;

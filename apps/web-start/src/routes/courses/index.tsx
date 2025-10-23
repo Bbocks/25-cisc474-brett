@@ -64,10 +64,10 @@ function CoursesList() {
   const semesters = ['all'];
 
   if (coursesQuery.error) {
-    return <div className="text-red-600">{coursesQuery.error.message}</div>;
+    return <div className="flex flex-col items-center justify-center h-screen text-red-600">{coursesQuery.error.message}</div>;
   }
   if (coursesQuery.showLoading) {
-    return <div className="text-gray-500">Loading courses…</div>;
+    return <div className="flex flex-col items-center justify-center h-screen"><Spinner className="size-24" /></div>;
   }
 
   async function handleCreate(e: React.FormEvent) {

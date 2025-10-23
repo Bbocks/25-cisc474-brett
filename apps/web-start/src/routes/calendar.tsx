@@ -74,9 +74,9 @@ function CalendarPageInner() {
                     {/* Calendar - 75% width */}
                     <div className="flex-1" style={{ width: '75%' }}>
                         {coursesQuery.showLoading || assignmentsQuery.showLoading ? (
-                            <div className="p-6 text-gray-500">Loading calendar…</div>
+                            <div className="flex flex-col items-center justify-center h-screen"><Spinner className="size-24" /></div>
                         ) : coursesQuery.error || assignmentsQuery.error ? (
-                            <div className="p-6 text-red-600">{coursesQuery.error?.message || assignmentsQuery.error?.message || 'Failed to load'}</div>
+                            <div className="flex flex-col items-center justify-center h-screen text-red-600">{coursesQuery.error?.message || assignmentsQuery.error?.message || 'Failed to load'}</div>
                         ) : (
                             <Calendar
                                 visibleClasses={visibleClasses}
