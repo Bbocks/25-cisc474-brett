@@ -78,7 +78,7 @@ export function useApiQuery<T>(
     },
     // Some potential optimizations you can experiment with
     // staleTime: 60_000, // avoid immediate refetches
-    // refetchOnWindowFocus: false, // avoid focus-triggered flicker
+    refetchOnWindowFocus: false, // avoid focus-triggered flicker
     // placeholderData: (prev) => prev, // keep old data during refetch
   });
   const isAuthPending = isAuthLoading || !isAuthenticated;
