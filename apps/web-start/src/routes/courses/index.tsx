@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
-import { BookOpen, Calendar as CalendarIcon, ChevronRight, Clock, Search, Users } from "lucide-react";
+import { BookOpen, Calendar as CalendarIcon, ChevronRight, Clock, Link, Search, Users } from "lucide-react";
 import { useApiQuery, useApiMutation } from "@/integrations/api";
 import type { CourseDto, CourseCreateDto, CourseUpdateDto } from "@repo/api/courses/dto";
 import type { SetStateAction } from "react";
@@ -10,6 +10,7 @@ import { Badge } from "@/_components/ui/badge";
 import { Button } from "@/_components/ui/button";
 import { Input } from "@/_components/ui/input";
 import { Spinner } from "@/_components/ui/spinner"
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const Route = createFileRoute('/courses/')({
   component: CoursesPage,
@@ -252,9 +253,27 @@ function CoursesList() {
 }
 
 function CoursesPage() {
-  return (
-    <Suspense fallback={<div className="flex items-center gap-6"><Spinner className="size-24" /></div>}>
-      <CoursesList />
-    </Suspense>
-  );
+  const { isAuthenticated, isLoading } = useAuth0();
+
+  
+  if (isLoading) {
+    return <div className="flex flex-col items-center justify-center h-screen">
+      <Spinner className="size-24" />
+      Loading...
+    </div>;
+  }
+
+  if (!isAuthenticated) {
+    return <div className="flex flex-col items-center justify-center h-screen">
+      <Link to="/login" className="text-blue-500 hover:underline">Please login to view the dashboard</Link>
+    </div>;
+  } else {
+    return (
+      <div>
+        <Suspense fallback={<div className="flex items-center gap-6"><Spinner className="size-24" /></div>}>
+          <CoursesList />
+        </Suspense>
+      </div>
+    );
+  }
 }

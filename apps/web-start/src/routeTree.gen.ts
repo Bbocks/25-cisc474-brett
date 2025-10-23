@@ -9,7 +9,6 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as DashboardRouteImport } from './routes/dashboard'
@@ -18,11 +17,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as CoursesIndexRouteImport } from './routes/courses/index'
 import { Route as CoursesGradesRouteImport } from './routes/courses/grades'
 
-const SignupRoute = SignupRouteImport.update({
-  id: '/signup',
-  path: '/signup',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -65,7 +59,6 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof DashboardRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
   '/courses/grades': typeof CoursesGradesRoute
   '/courses': typeof CoursesIndexRoute
 }
@@ -75,7 +68,6 @@ export interface FileRoutesByTo {
   '/dashboard': typeof DashboardRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
   '/courses/grades': typeof CoursesGradesRoute
   '/courses': typeof CoursesIndexRoute
 }
@@ -86,7 +78,6 @@ export interface FileRoutesById {
   '/dashboard': typeof DashboardRoute
   '/home': typeof HomeRoute
   '/login': typeof LoginRoute
-  '/signup': typeof SignupRoute
   '/courses/grades': typeof CoursesGradesRoute
   '/courses/': typeof CoursesIndexRoute
 }
@@ -98,7 +89,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/home'
     | '/login'
-    | '/signup'
     | '/courses/grades'
     | '/courses'
   fileRoutesByTo: FileRoutesByTo
@@ -108,7 +98,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/home'
     | '/login'
-    | '/signup'
     | '/courses/grades'
     | '/courses'
   id:
@@ -118,7 +107,6 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/home'
     | '/login'
-    | '/signup'
     | '/courses/grades'
     | '/courses/'
   fileRoutesById: FileRoutesById
@@ -129,20 +117,12 @@ export interface RootRouteChildren {
   DashboardRoute: typeof DashboardRoute
   HomeRoute: typeof HomeRoute
   LoginRoute: typeof LoginRoute
-  SignupRoute: typeof SignupRoute
   CoursesGradesRoute: typeof CoursesGradesRoute
   CoursesIndexRoute: typeof CoursesIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/signup': {
-      id: '/signup'
-      path: '/signup'
-      fullPath: '/signup'
-      preLoaderRoute: typeof SignupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -201,7 +181,6 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardRoute: DashboardRoute,
   HomeRoute: HomeRoute,
   LoginRoute: LoginRoute,
-  SignupRoute: SignupRoute,
   CoursesGradesRoute: CoursesGradesRoute,
   CoursesIndexRoute: CoursesIndexRoute,
 }

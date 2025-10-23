@@ -8,7 +8,8 @@ import { useApiQuery } from "@/integrations/api";
 import type { CourseDto } from "@repo/api/courses/dto";
 import type { AssignmentDto } from "@repo/api/assignments/dto";
 import type { CalendarFeature } from "@/_components/calendar-helper";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const Route = createFileRoute('/calendar')({
     component: CalendarPage,
@@ -111,9 +112,27 @@ function CalendarPageInner() {
 }
 
  function CalendarPage() {
+    const { isAuthenticated, isLoading } = useAuth0();
+
+  
+  if (isLoading) {
+    return <div className="flex flex-col items-center justify-center h-screen">
+      <Spinner className="size-24" />
+      Loading...
+    </div>;
+  }
+
+  if (!isAuthenticated) {
+    return <div className="flex flex-col items-center justify-center h-screen">
+      <Link to="/login" className="text-blue-500 hover:underline">Please login to view the dashboard</Link>
+    </div>;
+  } else {
     return (
+      <div>
         <Suspense fallback={<div className="flex items-center gap-6"><Spinner className="size-24" /></div>}>
-            <CalendarPageInner />
+          <CalendarPageInner />
         </Suspense>
+      </div>
     );
+  }
 }
