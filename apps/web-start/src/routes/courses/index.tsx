@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
-import { BookOpen, Calendar as CalendarIcon, ChevronRight, Clock, Link, Search, Users } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { BookOpen, Calendar as CalendarIcon, ChevronRight, Clock, Search, Users } from "lucide-react";
 import { useApiQuery, useApiMutation } from "@/integrations/api";
 import type { CourseDto, CourseCreateDto, CourseUpdateDto } from "@repo/api/courses/dto";
 import type { SetStateAction } from "react";
