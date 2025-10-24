@@ -15,7 +15,7 @@ export default function Header() {
     if (isAuthenticated) {
         return <div className="relative w-full" >
             <Navbar05
-                logoHref="/"
+                logoHref="/dashboard"
                 onNavItemClick={(href) => router.navigate({ to: href })}
                 navigationLinks={[
                     { href: '/', label: 'Directory Page (Grading)' },
