@@ -15,6 +15,7 @@ import {
   PopoverTrigger,
   } from '@/_components/ui/popover';
 import { cn } from '@/lib/utils';
+import { Link } from '@tanstack/react-router';
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -247,9 +248,9 @@ export const Navbar01 = React.forwardRef<HTMLElement, Navbar01Props>(
             <Button
               size="sm"
               className="text-sm font-medium px-4 h-9 rounded-md shadow-sm"
-              onClick={(e) => {
-                e.preventDefault();
-                if (onCtaClick) onCtaClick();
+              onClick={() => {
+                // <Link to="/login"></Link>
+                window.location.replace('/login');
               }}
             >
               {ctaText}
