@@ -27,6 +27,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/_components/ui/avatar';
 import { Badge } from '@/_components/ui/badge';
 import { cn } from '@/lib/utils';
 import type { ComponentProps } from 'react';
+import { useAuth0 } from '@auth0/auth0-react';
 
 // Simple logo component for the navbar
 const Logo = (props: React.SVGAttributes<SVGElement>) => {
@@ -206,7 +207,15 @@ const UserMenu = ({
         Billing
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem onClick={() => onItemClick?.('logout')}>
+      const {  } = useAuth0();
+      <DropdownMenuItem onClick={() => {
+        // Clear Auth0 local storage items
+        localStorage.removeItem("@@auth0spajs@@::3oTGsEJSfnQ9PxN0fB1HzKaikAVGEApu::@@user@@");
+        localStorage.removeItem("@@auth0spajs@@::3oTGsEJSfnQ9PxN0fB1HzKaikAVGEApu::default::openid profile email offline_access read:all");
+        // Force a full redirect to the site root
+        window.location.replace('/');
+        onItemClick?.('logout');
+      }}>
         Log out
       </DropdownMenuItem>
     </DropdownMenuContent>
